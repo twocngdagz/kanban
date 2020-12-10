@@ -32,6 +32,7 @@ export default {
     },
     created() {
         this.fetchColumns()
+        console.log(process.env.API_URL)
     }
 }
 </script>

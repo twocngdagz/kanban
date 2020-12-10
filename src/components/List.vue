@@ -32,7 +32,7 @@ export default {
     },
     created() {
         this.fetchColumns()
-        console.log(process.env.API_URL)
+        console.log(process.env.VUE_APP_API_URL)
     }
 }
 </script>

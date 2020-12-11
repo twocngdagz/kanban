@@ -1,6 +1,21 @@
 <template>
     <div class="wrapper">
-        <modal name="modal-form">
+        <div class="header">
+            <a href="#" @click.prevent="addColumn">Add Column</a> | <a href="#" @click.prevent="dump">Export</a>
+        </div>
+        <modal name="modal-form-column" height="auto" @closed="reset">
+            <div class="modal-form">
+                <div class="form-group">
+                    <label class="form-group__label">Title</label>
+                    <input v-model="columnTitle" class="form-group__text" type="text">
+                </div>
+            </div>
+            <div class="btn-set">
+                <button class="btn btn-default" style="margin-right: 1rem" @click="saveColumn">Save</button>
+                <button class="btn btn-alert" @click="closeModal">Cancel</button>
+            </div>
+        </modal>
+        <modal name="modal-form" height="auto" @closed="reset">
             <div class="modal-form">
                 <div class="form-group">
                     <label class="form-group__label">Title</label>
@@ -42,7 +57,8 @@ export default {
             title: "",
             description: "",
             columnId: "",
-            columnIndex: ""
+            columnIndex: "",
+            columnTitle: "",
         }
     },
     computed: {
@@ -56,7 +72,9 @@ export default {
             'updateColumns',
             'updateCard',
             'addCard',
-            'dropColumn'
+            'dropColumn',
+            'createColumn',
+            'exportDB',
         ]),
         showModal(id, title, description) {
             this.title = title
@@ -70,10 +88,12 @@ export default {
             this.description = ""
             this.columnId = ""
             this.columnIndex = ""
+            this.columnTitle = ""
         },
         closeModal() {
             this.reset()
             this.$modal.hide('modal-form');
+            this.$modal.hide('modal-form-column');
         },
         save() {
             if (this.id) {
@@ -91,10 +111,27 @@ export default {
             this.columnIndex = index
             this.$modal.show('modal-form');
         },
+        addColumn() {
+            this.$modal.show('modal-form-column');
+        },
+        saveColumn() {
+            this.createColumn({ name: this.columnTitle }).then(() => {
+                this.closeModal()
+            })
+        },
+        dump() {
+            this.exportDB().then((response) => {
+                const blob = new Blob([response.data], { type: 'application/sql' })
+                const link = document.createElement('a')
+                link.href = URL.createObjectURL(blob)
+                link.download = 'dump.sql'
+                link.click()
+                URL.revokeObjectURL(link.href)
+            })
+        }
     },
     created() {
         this.fetchColumns()
-        console.log(process.env.VUE_APP_API_URL)
     }
 }
 </script>

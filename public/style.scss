@@ -15,6 +15,10 @@ textarea {
     color: #22292f;
     line-height: 1.25;
 
+    .header {
+        padding: 1rem;
+    }
+
     .content {
         display: flex;
         max-width: 90%;

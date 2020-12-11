@@ -23,4 +23,8 @@ export default {
         let pos = state.columns.findIndex(column => column.id === id)
         state.columns.splice(pos, 1)
     },
+
+    [types.ADD_COLUMN](state, column) {
+        state.columns.push(column)
+    },
 }

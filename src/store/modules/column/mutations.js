@@ -16,6 +16,11 @@ export default {
     },
 
     [types.ADD_CARD](state, card) {
-        state.columns[card.column_id].cards.push(card)
+        state.columns[card.index].cards.push(card)
+    },
+
+    [types.DELETE_COLUMN](state, id) {
+        let pos = state.columns.findIndex(column => column.id === id)
+        state.columns.splice(pos, 1)
     },
 }

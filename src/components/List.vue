@@ -18,7 +18,7 @@
         </modal>
         <div class="content">
             <div class="column m-1" v-for="(column, index) in columns" :key="index">
-                <a href="#" @click="addCardToColumn(column.id)">Add Card</a> | <a href="#">Delete Column</a>
+                <a href="#" @click.prevent="addCardToColumn(column.id, index)">Add Card</a> | <a href="#" @click.prevent="dropColumn(column)">Delete Column</a>
                 <h1 class="column__header">{{ column.name }}</h1>
                 <draggable :list="column.cards" group="task" @start="drag=true" @change="updateColumns">
                     <div class="card" v-for="card in column.cards" :key="card.id" @click="showModal(card.id, card.title, card.description)">{{ card.title }}</div>
@@ -31,6 +31,7 @@
 import draggable from "vuedraggable";
 import '../../public/style.scss'
 import { mapActions, mapGetters } from 'vuex'
+
 export default {
     components: {
         draggable
@@ -40,7 +41,8 @@ export default {
             id: "",
             title: "",
             description: "",
-            columnId: ""
+            columnId: "",
+            columnIndex: ""
         }
     },
     computed: {
@@ -53,7 +55,8 @@ export default {
             'fetchColumns',
             'updateColumns',
             'updateCard',
-            'addCard'
+            'addCard',
+            'dropColumn'
         ]),
         showModal(id, title, description) {
             this.title = title
@@ -62,10 +65,11 @@ export default {
             this.$modal.show('modal-form');
         },
         reset() {
-            this.id = "",
-                this.title = "",
-                this.description = ""
+            this.id = ""
+            this.title = ""
+            this.description = ""
             this.columnId = ""
+            this.columnIndex = ""
         },
         closeModal() {
             this.reset()
@@ -77,15 +81,16 @@ export default {
                     this.closeModal()
                 })
             } else {
-                this.addCard({ title: this.title, description: this.description, column: this.columnId }).then(() => {
+                this.addCard({ title: this.title, description: this.description, column: this.columnId, index: this.columnIndex }).then(() => {
                     this.closeModal()
                 })
             }
         },
-        addCardToColumn(columnId) {
+        addCardToColumn(columnId, index) {
             this.columnId = columnId
+            this.columnIndex = index
             this.$modal.show('modal-form');
-        }
+        },
     },
     created() {
         this.fetchColumns()
